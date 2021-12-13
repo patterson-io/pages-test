@@ -1,0 +1,89 @@
+name: "provision stack build/ deploy for ghpages"
+
+on:
+  workflow_dispatch:
+    inputs:
+      NODE_VERSION:
+        required: true
+        description: 'nodejs version to be used'
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          
+      - name: use node.js ${{ github.event.inputs.NODE_VERSION }} 
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ github.event.inputs.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org/
+
+      - name: stacks framework code generation
+        run: |
+          npx create-next-app nextjs-scaffold --use-npm --example "https://github.com/vercel/next-learn/tree/master/basics/learn-starter"
+          cp -r nextjs-scaffold/* .
+          rm -rf nextjs-scaffold
+          echo ${{ github.event.inputs.NODE_VERSION }} > .nmvrc
+          
+      - name: Configure git
+        run: |
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          
+      - name: Commit generated code and initialize workflows
+        run: |
+          git add .
+          git commit -m "[skip ci] Generate framework code and initialize workflows"
+          git push origin -u main
+
+      - name: build
+        run: |
+          npm install
+          npm run build 
+          npm run env -- next export -o build
+
+      - name: Archive build output
+        run: "tar --dereference --directory build/ -cvf artifact.tar ."
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: github-pages
+          path: artifact.tar
+                    
+      - name: Enable GitHub Pages
+        uses: actions/github-script@v4
+        continue-on-error: true # API fails when the GitHub pages is already deployed
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.repos.createPagesSite({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              source: {
+                branch: 'gh-pages',
+                path: '/'
+              }
+            })
+            
+  deploy:
+    runs-on: ubuntu-latest
+    needs: setup
+
+    environment:
+      name: github-pages
+      url: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: paper-spa/deploy-pages@main
