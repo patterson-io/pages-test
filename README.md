@@ -87,7 +87,7 @@ The application displays a welcome page with links to Next.js resources:
 ## Repository Structure
 
 ```
-├── .devcontainer/           # Development container configuration
+├── .devcontainer/          # Development container configuration
 │   ├── Dockerfile          # Container setup with Ubuntu 18.04
 │   └── setup.sh            # Environment setup script
 ├── .github/                # GitHub-specific configuration
@@ -121,9 +121,9 @@ We welcome contributions to improve this testing platform! Here's how to get sta
 ### How to Contribute
 
 1. **Fork the repository**
-   ```bash
-   git fork https://github.com/patterson-io/pages-test.git
-   ```
+   - Navigate to [https://github.com/patterson-io/pages-test](https://github.com/patterson-io/pages-test)
+   - Click the "Fork" button in the top right corner
+   - Or use GitHub CLI: `gh repo fork https://github.com/patterson-io/pages-test.git`
 
 2. **Create a feature branch**
    ```bash
