@@ -20,7 +20,7 @@ The project includes a development container setup for consistent development en
 
 ### Prerequisites
 
-- **Node.js**: Version 14.17.4 or higher (as specified in `.nvmrc`)
+- **Node.js**: Version 14.17.4 or higher (as specified in `.nmvrc`)
 - **npm**: Comes bundled with Node.js
 - **Git**: For version control
 
@@ -75,7 +75,7 @@ The project is configured to automatically build and deploy to GitHub Pages when
 ```bash
 # Build and export static files
 npm run build
-npm run env -- next export -o build
+npx next export -o build
 ```
 
 ### Code Examples
@@ -109,6 +109,7 @@ export default function Home() {
 ```
 ├── .devcontainer/
 │   ├── Dockerfile              # Development container configuration
+│   ├── devcontainer.json       # VS Code dev container settings
 │   └── setup.sh               # Container setup script with dev tools
 ├── .github/
 │   └── workflows/
@@ -120,7 +121,7 @@ export default function Home() {
 │   ├── favicon.ico           # Site favicon
 │   └── vercel.svg           # Vercel logo asset
 ├── .gitignore               # Git ignore patterns for Node.js projects
-├── .nvmrc                   # Node.js version specification (v14.17.4)
+├── .nmvrc                   # Node.js version specification (v14.17.4)
 ├── package.json             # Project dependencies and scripts
 ├── package-lock.json        # Locked dependency versions
 └── README.md               # This comprehensive documentation
